@@ -8,8 +8,11 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 scalaVersion := "2.12.2"
 
 libraryDependencies ++= Seq(
+  ehcache,
   ws,
   guice,
+  "ch.qos.logback" % "logback-classic" % "1.2.3",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.6.0",
   "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.0" % Test
 )
 

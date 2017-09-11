@@ -3,25 +3,32 @@ package models
 import org.joda.time.LocalDate
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import play.api.libs.json._
+import WeatherType._
 
-case class WeatherResponse(code: String, date: LocalDate, day: String, high: String, low: String, text: String)
+case class WeatherResponse(code: String, date: LocalDate, day: String, high: String, low: String, text: WeatherType)
 case class SearchResponse(city: String, weatherResponseList: Seq[WeatherResponse])
 
+object SearchResponse {
+  def selectOnlySunnyWeather(searchResponse: SearchResponse): SearchResponse = {
+    val newList = searchResponse.weatherResponseList.filter { wr =>  isNotRainyWeather(wr.text) }
+    searchResponse.copy(weatherResponseList = newList)
+  }
+}
+
 object ImplicitFormats {
-  val dateFormatter: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
-  val dateReadFormatter: DateTimeFormatter = DateTimeFormat.forPattern("dd MMM yyyy")
+  val dateFormatter: DateTimeFormatter = DateTimeFormat.forPattern("dd MMM yyyy")
 
   implicit val jodaDateWrites: Writes[LocalDate] = Writes[LocalDate](date => JsString(date.toString(dateFormatter)))
 
   implicit val jodaDateReads: Reads[LocalDate] = Reads[LocalDate](js =>
     js.validate[String].map[LocalDate] { dtString =>
-      LocalDate.parse(dtString, dateReadFormatter)
+      LocalDate.parse(dtString, dateFormatter)
     })
 
   implicit val weatherResponseFormat: Format[WeatherResponse] = Json.format[WeatherResponse]
   implicit val searchResponseFormat: Format[SearchResponse] = Json.format[SearchResponse]
 
-  implicit val mapWrites: Writes[Map[(LocalDate, String), Seq[(String, WeatherResponse)]]] = Writes[Map[(LocalDate, String), Seq[(String, WeatherResponse)]]] ( map =>
+  implicit val mapWrites: Writes[Map[(LocalDate, WeatherType), Seq[(String, WeatherResponse)]]] = Writes[Map[(LocalDate, WeatherType), Seq[(String, WeatherResponse)]]] ( map =>
       Json.toJson(
         map.map {
           case (key, value) =>
