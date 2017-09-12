@@ -3,14 +3,20 @@
 
   <conversionRule conversionWord="coloredLevel" converterClass="play.api.libs.logback.ColoredLevel" />
 
-  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+  <!-- address performance concern with jul-to-slf4j -->
+  <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+    <resetJUL>true</resetJUL>
+  </contextListener>
+
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender" level="INFO">
+    <filter class="common.ApplicationFilter"/>
     <file>${application.home:-.}/logs/application.log</file>
     <encoder>
       <pattern>%date [%level] from %logger in %thread - %message%n%xException</pattern>
     </encoder>
   </appender>
 
-  <appender name="WEATHER_TYPE" class="ch.qos.logback.core.FileAppender">
+  <appender name="WEATHER_TYPE" class="ch.qos.logback.core.FileAppender" level="INFO">
     <filter class="common.WeatherTypeFilter"/>
     <file>${application.home:-.}/logs/unknown_weather_types.log</file>
     <encoder>
@@ -25,30 +31,32 @@
   </appender>
 
   <appender name="ASYNCFILE" class="ch.qos.logback.classic.AsyncAppender">
+    <queueSize>500</queueSize>
+    <neverBlock>true</neverBlock>
+    <discardingThreshold>0</discardingThreshold>
     <appender-ref ref="FILE" />
   </appender>
 
   <appender name="ASYNC_WEATHER_TYPE" class="ch.qos.logback.classic.AsyncAppender">
+    <queueSize>500</queueSize>
+    <neverBlock>true</neverBlock>
+    <discardingThreshold>0</discardingThreshold>
     <appender-ref ref="WEATHER_TYPE" />
   </appender>
 
   <appender name="ASYNCSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
+    <queueSize>500</queueSize>
+    <neverBlock>true</neverBlock>
+    <discardingThreshold>0</discardingThreshold>
     <appender-ref ref="STDOUT" />
   </appender>
 
   <logger name="play" level="INFO" />
-  <logger name="application" level="DEBUG" />
-  <logger name="play.api.libs.ws.ahc.cache" level="TRACE" />
-
-  <!-- Off these ones as they are annoying, and anyway we manage configuration ourselves -->
-  <logger name="com.avaje.ebean.config.PropertyMapLoader" level="OFF" />
-  <logger name="com.avaje.ebeaninternal.server.core.XmlConfigLoader" level="OFF" />
-  <logger name="com.avaje.ebeaninternal.server.lib.BackgroundThread" level="OFF" />
-  <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF" />
+  <logger name="application" level="INFO" />
 
   <root level="INFO">
-    <!--<appender-ref ref="ASYNCFILE" />-->
     <appender-ref ref="ASYNCSTDOUT" />
+    <appender-ref ref="ASYNCFILE" />
     <appender-ref ref="ASYNC_WEATHER_TYPE" />
   </root>
 
