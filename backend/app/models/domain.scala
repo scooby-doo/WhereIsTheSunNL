@@ -7,6 +7,7 @@ import WeatherType._
 
 case class WeatherResponse(code: String, date: LocalDate, day: String, high: String, low: String, text: WeatherType)
 case class SearchResponse(city: String, weatherResponseList: Seq[WeatherResponse])
+case class SuggestCityRequest(city: String)
 
 object SearchResponse {
   def selectOnlySunnyWeather(searchResponse: SearchResponse): SearchResponse = {
@@ -27,6 +28,7 @@ object ImplicitFormats {
 
   implicit val weatherResponseFormat: Format[WeatherResponse] = Json.format[WeatherResponse]
   implicit val searchResponseFormat: Format[SearchResponse] = Json.format[SearchResponse]
+  implicit val suggestCityRequestFormat: Format[SuggestCityRequest] = Json.format[SuggestCityRequest]
 
   implicit val mapWrites: Writes[Map[(LocalDate, WeatherType), Seq[(String, WeatherResponse)]]] = Writes[Map[(LocalDate, WeatherType), Seq[(String, WeatherResponse)]]] ( map =>
       Json.toJson(

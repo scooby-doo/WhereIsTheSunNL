@@ -23,8 +23,8 @@ class QueryServiceProcessor @Inject()(queryService: QueryService) (implicit ec: 
   def groupByDayAndWeather(): Future[Map[(LocalDate, WeatherType), Seq[(String, WeatherResponse)]]] = {
 
     for {
-      searchResponseListNonFiltered <- queryService.getWeatherForAllCities
-      searchResponseList = searchResponseListNonFiltered.map{ selectOnlySunnyWeather }
+      searchResponseList: Seq[SearchResponse] <- queryService.getWeatherForAllCities
+      //searchResponseList: Seq[SearchResponse] = searchResponseListNonFiltered.map{ selectOnlySunnyWeather }
       groupedResults = SortedMap(searchResponseList.flatMap { x => x.weatherResponseList.map(y => (x.city, y)) }.groupBy{case (_, wr) => (wr.date, wr.text)}.toSeq:_*)
     } yield groupedResults
   }
