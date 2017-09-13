@@ -3,7 +3,7 @@ $(document).ready(function() {
    var rainy = ["Rain", "Showers", "Thunderstorms", "Scattered Showers", "Scattered Thunderstorms"]
 
    $.ajax({
-     url: "http://localhost:9000/get-info"
+     url: "/get-info"
    })
    .done(function(data) {
      loadList(data)
