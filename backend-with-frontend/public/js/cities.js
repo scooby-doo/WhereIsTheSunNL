@@ -54,7 +54,7 @@ $(function() {
      if (name.length > 0) {
        $.ajax({
          method: "POST",
-         url: "http://localhost:9000/suggest-city",
+         url: "/suggest-city",
          contentType: "application/json",
          data: '{"city": ' + '"' + name  + '"}'
        })
