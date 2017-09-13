@@ -1,0 +1,79 @@
+<!-- https://www.playframework.com/documentation/latest/SettingsLogger -->
+<configuration>
+
+  <conversionRule conversionWord="coloredLevel" converterClass="play.api.libs.logback.ColoredLevel" />
+
+  <!-- address performance concern with jul-to-slf4j -->
+  <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+    <resetJUL>true</resetJUL>
+  </contextListener>
+
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender" level="INFO">
+    <filter class="common.ApplicationFilter"/>
+    <file>${application.home:-.}/logs/application.log</file>
+    <encoder>
+      <pattern>%date [%level] from %logger - %message%n%xException</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="WEATHER_TYPE" class="ch.qos.logback.core.FileAppender" level="INFO">
+    <filter class="common.WeatherTypeFilter"/>
+    <file>${application.home:-.}/logs/unknown_weather_types.log</file>
+    <encoder>
+      <pattern>%date [%level] from %logger - %message%n%xException</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="SUGGESTED_CITIES" class="ch.qos.logback.core.FileAppender" level="INFO">
+    <filter class="common.SuggestedCitiesFilter"/>
+    <file>${application.home:-.}/logs/suggested_cities.log</file>
+    <encoder>
+      <pattern>%date [%level] from %logger - %message%n%xException</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%coloredLevel %logger{15} - %message%n%xException{10}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="ASYNCFILE" class="ch.qos.logback.classic.AsyncAppender">
+    <queueSize>500</queueSize>
+    <neverBlock>true</neverBlock>
+    <discardingThreshold>0</discardingThreshold>
+    <appender-ref ref="FILE" />
+  </appender>
+
+  <appender name="ASYNC_WEATHER_TYPE" class="ch.qos.logback.classic.AsyncAppender">
+    <queueSize>500</queueSize>
+    <neverBlock>true</neverBlock>
+    <discardingThreshold>0</discardingThreshold>
+    <appender-ref ref="WEATHER_TYPE" />
+  </appender>
+
+  <appender name="ASYNC_SUGGESTED_CITY" class="ch.qos.logback.classic.AsyncAppender">
+    <queueSize>500</queueSize>
+    <neverBlock>true</neverBlock>
+    <discardingThreshold>0</discardingThreshold>
+    <appender-ref ref="SUGGESTED_CITIES" />
+  </appender>
+
+  <appender name="ASYNCSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
+    <queueSize>500</queueSize>
+    <neverBlock>true</neverBlock>
+    <discardingThreshold>0</discardingThreshold>
+    <appender-ref ref="STDOUT" />
+  </appender>
+
+  <logger name="play" level="INFO" />
+  <logger name="application" level="INFO" />
+
+  <root level="INFO">
+    <appender-ref ref="ASYNCSTDOUT" />
+    <appender-ref ref="ASYNCFILE" />
+    <appender-ref ref="ASYNC_WEATHER_TYPE" />
+    <appender-ref ref="ASYNC_SUGGESTED_CITY" />
+  </root>
+
+</configuration>
