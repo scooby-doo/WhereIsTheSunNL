@@ -7,10 +7,15 @@ import ch.qos.logback.core.spi.FilterReply
 class ApplicationFilter  extends Filter[ILoggingEvent] {
 
   override def decide(event: ILoggingEvent): FilterReply = {
-    if (!event.getLoggerName.contains("models.WeatherType")) {
+    if (isApplicationLogger(event.getLoggerName)) {
       FilterReply.ACCEPT
     } else {
       FilterReply.DENY
     }
+  }
+
+  private def isApplicationLogger(incomingLoggerName: String) = {
+    !List("models.WeatherType", "controllers.QueryController").exists(
+      loggerName => incomingLoggerName.contains(loggerName))
   }
 }
