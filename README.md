@@ -6,12 +6,13 @@ if there is a place with sun and no rain in the Netherlands, you will see it in 
 
 ## Run together
 `cd backend-with-frontend`
+
 `sbt run`
 
 ## Run separately
 Run Backend first:
 
-`cd backend/` 
+`cd backend/`
 
 `sbt run`
 
