@@ -2,4 +2,5 @@ logs
 target
 .idea
 .DS_Store
+production.conf
 

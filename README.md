@@ -4,28 +4,11 @@ if there is a place with sun and no rain in the Netherlands, you will see it in 
 
 # Instructions:
 
-## Run together
-`cd backend-with-frontend`
+## Run project
 
 `sbt run`
 
-## Run separately
-Run Backend first:
-
-`cd backend/`
-
-`sbt run`
-
-Then run the front end: 
-
-`cd frontend/`
-
-`python -m SimpleHTTPServer 8000`
-
-Navigate to:  `http://localhost:8000`
-
-## Run the backend in production mode
-In the desired folder do:
+## Run in production mode
 
 `sbt runProd`
 
@@ -33,11 +16,13 @@ To stop it, type:
 
 `CTRL + C`
 
-# TODO:
-## How much to the sun?
-The application will also show the time needed to get to the sunny places, based on the location of the user.
+## Load Testing
+Install wrk
+`brew install wrk` for OS X
+`wrk -t12 -c400 -d30s https://staydry-nl.herokuapp.com/`
 
-## Proper Deployment
-Figure out how to deploy separately the backend and frontend (or if it is actually needed)
-https://stackoverflow.com/questions/41247687/how-to-deploy-separated-frontend-and-backend
-https://www.reddit.com/r/webhosting/comments/6sh2lr/separate_frontend_and_backend_on_heroku/
+## Known dev issues
+logback filetrs do not work in dev mode
+
+https://github.com/playframework/playframework/issues/822
+https://stackoverflow.com/questions/20210574/play-fails-to-load-custom-log-back-appender
