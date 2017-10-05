@@ -1,15 +1,16 @@
 package common
 
-import play.api.Configuration
-import play.api.Environment
-import play.api.inject._
-import services.QueryService
-import services.impl.QueryServiceImpl
+import com.google.inject.AbstractModule
+import play.api.libs.concurrent.AkkaGuiceSupport
+import scheduler.UpdateWeatherScheduler
+import services.{QueryService, QueryServiceProcessor}
+import services.impl.{QueryServiceImpl, QueryServiceProcessorImpl}
 
-class MyModule extends Module {
-  def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
-    Seq(
-      bind[QueryService].to[QueryServiceImpl].eagerly()
-    )
+class MyModule extends AbstractModule with AkkaGuiceSupport {
+  override def configure = {
+    bind(classOf[QueryService]).to(classOf[QueryServiceImpl])
+    bind(classOf[QueryServiceProcessor]).to(classOf[QueryServiceProcessorImpl])
+    bindActor[WeatherActor](WeatherActor.Name)
+    bind(classOf[UpdateWeatherScheduler]).asEagerSingleton()
   }
 }

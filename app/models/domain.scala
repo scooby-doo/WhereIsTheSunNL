@@ -3,8 +3,9 @@ package models
 import models.WeatherType._
 import org.joda.time.LocalDate
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json._
 
 case class WeatherResponse(code: String, date: LocalDate, day: String, high: String, low: String, text: WeatherType)
 case class SearchResponse(city: String, weatherResponseList: Seq[WeatherResponse])
@@ -35,7 +36,9 @@ object ImplicitFormats {
       (JsPath \ "item" \ "forecast").read[List[WeatherResponse]]
   )(SearchResponse.apply _)
 
-  implicit val suggestCityRequestFormat: Format[SuggestCityRequest] = Json.format[SuggestCityRequest]
+  // https://stackoverflow.com/questions/14754092/how-to-turn-json-to-case-class-when-case-class-has-only-one-field - THIS IS UNACCEPTABLE CONDITION
+  implicit val suggestCityRequestReads: Reads[SuggestCityRequest] =
+    (JsPath \ "city").read[String](minLength[String](2)).map { c => SuggestCityRequest(c) }
 
   implicit val mapWrites: Writes[Map[(LocalDate, WeatherType), Seq[(String, WeatherResponse)]]] = Writes[Map[(LocalDate, WeatherType), Seq[(String, WeatherResponse)]]] ( map =>
       Json.toJson(
