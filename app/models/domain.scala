@@ -1,9 +1,10 @@
 package models
 
+import models.WeatherType._
 import org.joda.time.LocalDate
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import play.api.libs.json._
-import WeatherType._
+import play.api.libs.functional.syntax._
 
 case class WeatherResponse(code: String, date: LocalDate, day: String, high: String, low: String, text: WeatherType)
 case class SearchResponse(city: String, weatherResponseList: Seq[WeatherResponse])
@@ -27,7 +28,13 @@ object ImplicitFormats {
     })
 
   implicit val weatherResponseFormat: Format[WeatherResponse] = Json.format[WeatherResponse]
-  implicit val searchResponseFormat: Format[SearchResponse] = Json.format[SearchResponse]
+  implicit val searchResponseWrites: Writes[SearchResponse] = Json.writes[SearchResponse]
+
+  implicit val searchResponseReads: Reads[SearchResponse] = (
+    (JsPath \ "location" \ "city").read[String] and
+      (JsPath \ "item" \ "forecast").read[List[WeatherResponse]]
+  )(SearchResponse.apply _)
+
   implicit val suggestCityRequestFormat: Format[SuggestCityRequest] = Json.format[SuggestCityRequest]
 
   implicit val mapWrites: Writes[Map[(LocalDate, WeatherType), Seq[(String, WeatherResponse)]]] = Writes[Map[(LocalDate, WeatherType), Seq[(String, WeatherResponse)]]] ( map =>
