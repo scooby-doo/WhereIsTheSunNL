@@ -66,7 +66,6 @@ a img{
   width: 140px;
 }
 
-
 .android-header {
   overflow: visible;
   background-color: white;
@@ -175,7 +174,7 @@ a img{
   height: 400px;
   width: auto;
   background-color: #f3f3f3;
-  background: url('../images/bike_3.jpg') center 42% no-repeat;
+  background: url('../images/sunny_3.jpg') center 82%  no-repeat;
   background-size: cover;
 }
 
@@ -197,21 +196,32 @@ a img{
   padding-top: 60px;
 }
 
+.android-slogan a {
+  background: rgba(42,42,42,0.5);
+  color: #fff
+}
+
 .android-sub-slogan {
   font-size: 21px;
   padding-top: 24px;
 }
 
-.android-create-character {
-  font-size: 21px;
-  padding-top: 180px;
+.android-sub-slogan a{
+  background: rgba(42,42,42,0.5);
+  color: #fff
 }
 
-  .android-create-character a {
-    text-decoration: none;
-    color: #fff;
-    font-weight: 300;
-  }
+.android-create-character {
+  font-size: 21px;
+  padding-top: 175px;
+}
+
+.android-create-character a {
+  text-decoration: none;
+  color: #fff;
+  background: rgba(42,42,42,0.5);
+  font-weight: 300;
+}
 
 .android-screen-section {
   position: relative;
