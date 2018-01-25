@@ -1,4 +1,4 @@
-package common
+package testresources
 
 import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures

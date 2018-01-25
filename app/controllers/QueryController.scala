@@ -1,22 +1,28 @@
 package controllers
 
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
 
+import akka.actor._
+import akka.pattern.ask
+import akka.util.Timeout
 import com.typesafe.scalalogging.LazyLogging
-import play.api.cache._
+import common.WeatherActor
 import models.ImplicitFormats._
 import models.{SuggestCityRequest, WeatherResponse, WeatherType}
-import org.joda.time.{DateTime, LocalDate}
-import play.api.libs.json.{JsResult, JsValue, Json}
+import org.joda.time.LocalDate
+import play.api.libs.json.{JsError, JsResult, JsValue, Json}
 import play.api.mvc._
-import services.QueryServiceProcessor
+import common.ApiErrors._
+import io.kanaka.monadic.dsl._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-class QueryController @Inject()(cache: AsyncCacheApi, queryServiceProcessor: QueryServiceProcessor, cc: ControllerComponents)
+class QueryController @Inject()(@Named(WeatherActor.Name) weatherActor: ActorRef, cc: ControllerComponents)
   extends AbstractController(cc) with LazyLogging {
+
+  implicit lazy val timeout: Timeout = Timeout(5.seconds)
 
   def findTheSun(): Action[AnyContent] =  Action.async {
     for {
@@ -26,21 +32,12 @@ class QueryController @Inject()(cache: AsyncCacheApi, queryServiceProcessor: Que
 
   def suggestCity(): Action[JsValue] =  Action.async(cc.parsers.json) { request =>
     for {
-      city: SuggestCityRequest <- request.body.validate[SuggestCityRequest]
-      _ = logger.info("Suggested city: {}", city.city)
-    } yield city
-
-    Future.successful(NoContent)
+      city <- request.body.validate[SuggestCityRequest] ?| (err => badRequest(JsError.toJson(err)))
+      _ =  logger.info("Suggested city: {}", city.city)
+    } yield NoContent
   }
 
 
-  private def getCachedValues: Future[Map[(LocalDate, WeatherType), Seq[(String, WeatherResponse)]]] =
-    cache.getOrElseUpdate[Map[(LocalDate, WeatherType), Seq[(String, WeatherResponse)]]]("weatherInformationResponse", 3.hours) {
-      logger.info("Sending request to real api - cache expired")
-      cache.remove("weatherInformationResponse")
-      for {
-        result <- queryServiceProcessor.groupByDayAndWeather()
-        _ <- cache.set("weatherInformationResponse", result, 3.hours)
-      } yield result
-  }
+  private def getCachedValues: Future[Option[Map[(LocalDate, WeatherType), Seq[(String, WeatherResponse)]]]] =
+    (weatherActor ? WeatherActor.GetCache).mapTo[Future[Option[Map[(LocalDate, WeatherType), Seq[(String, WeatherResponse)]]]]].flatten
 }

@@ -1,8 +1,7 @@
-package integration
+package services
 
-import common.IntegrationSpec
 import models.City
-import services.QueryService
+import testresources.IntegrationSpec
 
 class QueryServiceIntegrationSpec extends IntegrationSpec {
 

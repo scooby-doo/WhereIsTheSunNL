@@ -1,12 +1,18 @@
-package common
+package testresources
 
-import models.ImplicitFormats.dateFormatter
-import models.WeatherResponse
-import models.WeatherType
+import models.{WeatherResponse, WeatherType}
 import models.WeatherType._
 import org.joda.time.LocalDate
+import play.api.libs.json.{JsValue, Json}
 
 object TestData {
+
+  val city: JsValue = Json.parse(
+    """
+      {
+        "city": "Rotterdam"
+      }
+    """.stripMargin)
 
   val dateSep09: LocalDate = LocalDate.parse("2017-09-09")
   val dateSep10: LocalDate = LocalDate.parse("2017-09-10")

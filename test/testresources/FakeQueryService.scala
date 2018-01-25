@@ -1,12 +1,12 @@
-package services
+package testresources
 
 import javax.inject.Inject
 
-import models.ImplicitFormats.dateFormatter
+import models.WeatherType._
 import models.{SearchResponse, WeatherResponse}
 import org.joda.time.LocalDate
 import play.api.libs.ws.WSClient
-import models.WeatherType._
+import services.QueryService
 
 import scala.concurrent.Future
 
